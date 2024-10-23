@@ -6,10 +6,11 @@ import main.PlayManager;
 import java.awt.*;
 public class Mino {
 
-    public Block b[] = new Block[4];
-    public Block tempB[] = new Block[4];
+    public Block[] b = new Block[4];
+    public Block[] tempB = new Block[4];
     int autoDropCounter = 0;
     public int direction = 1; // 4 directions
+    boolean leftCollision, rightCollision, bottomCollision;
 
     public void create(Color c){
         b[0] = new Block(c);
@@ -44,45 +45,86 @@ public class Mino {
     public void getDirection2() {}
     public void getDirection3() {}
     public void getDirection4() {}
+    public void checkMovementCollision() {
+        leftCollision = false;
+        rightCollision = false;
+        bottomCollision = false;
+
+        //check frame collision
+        //left wall
+        for (Block block : b) {
+            if (block.x == PlayManager.left_x) {
+                leftCollision = true;
+                break;
+            }
+        }
+        //right wall
+        for (Block block : b) {
+            if (block.x + Block.SIZE == PlayManager.right_x) {
+                rightCollision = true;
+                break;
+            }
+        }
+        //bottom floor
+        for (Block block : b) {
+            if (block.y + Block.SIZE == PlayManager.bottom_y) {
+                bottomCollision = true;
+                break;
+            }
+        }
+    }
+    public void checkRotationCollision() {}
 
     public void update() {
 
         //mino move
         if(KeyHandler.upPressed){
             switch (direction) {
-                case 1: getDirection2(); break;
-                case 2: getDirection3(); break;
-                case 3: getDirection4(); break;
-                case 4: getDirection1(); break;
+                case 1 -> getDirection2();
+                case 2 -> getDirection3();
+                case 3 -> getDirection4();
+                case 4 -> getDirection1();
             }
             KeyHandler.upPressed = false;
         }
+
+        checkMovementCollision();
+
         if(KeyHandler.downPressed){
-            b[0].y += Block.SIZE;
-            b[1].y += Block.SIZE;
-            b[2].y += Block.SIZE;
-            b[3].y += Block.SIZE;
 
-            autoDropCounter = 0;
+            if(!bottomCollision) {
+                b[0].y += Block.SIZE;
+                b[1].y += Block.SIZE;
+                b[2].y += Block.SIZE;
+                b[3].y += Block.SIZE;
 
+                autoDropCounter = 0;
+            }
             KeyHandler.downPressed = false;
         }
+
         if(KeyHandler.leftPressed){
-            b[0].x -= Block.SIZE;
-            b[1].x -= Block.SIZE;
-            b[2].x -= Block.SIZE;
-            b[3].x -= Block.SIZE;
+            if(!leftCollision) {
+                b[0].x -= Block.SIZE;
+                b[1].x -= Block.SIZE;
+                b[2].x -= Block.SIZE;
+                b[3].x -= Block.SIZE;
+            }
 
             KeyHandler.leftPressed = false;
         }
+
         if(KeyHandler.rightPressed){
-            b[0].x += Block.SIZE;
-            b[1].x += Block.SIZE;
-            b[2].x += Block.SIZE;
-            b[3].x += Block.SIZE;
+            if(!rightCollision) {
+                b[0].x += Block.SIZE;
+                b[1].x += Block.SIZE;
+                b[2].x += Block.SIZE;
+                b[3].x += Block.SIZE;
+            }
 
             KeyHandler.rightPressed = false;
         }
+
         autoDropCounter++;
         if(autoDropCounter == PlayManager.dropInterval) {
             //the mino goes down

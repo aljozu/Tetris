@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.*;
+import java.util.Random;
 
 import main.GamePanel;
 import mino.*;
@@ -30,11 +31,22 @@ public class PlayManager {
         MINO_START_Y = top_y + Block.SIZE;
 
         // starting mino
-        currentMino = new Mino_L1();
+        currentMino = pickMino();
         currentMino.setXY(MINO_START_X, MINO_START_Y);
 
     }
-
+    private Mino pickMino() {
+        Mino[] minos = {
+                new Mino_L1(),
+                new Mino_L2(),
+                new Mino_Square(),
+                new Mino_Bar(),
+                new Mino_T(),
+                new Mino_Z1(),
+                new Mino_Z2()
+        };
+        return minos[new Random().nextInt(minos.length)];
+    }
     public void update() {
         currentMino.update();
     }
@@ -54,6 +66,15 @@ public class PlayManager {
         //draw the current mino
         if(currentMino != null) {
             currentMino.draw(g2);
+        }
+
+        //draw pause
+        g2.setColor(Color.YELLOW);
+        g2.setFont(g2.getFont().deriveFont(50f));
+        if(KeyHandler.pausePressed){
+            x = left_x + 70;
+            y = top_y + 320;
+            g2.drawString("PAUSED", x, y);
         }
     }
 }
